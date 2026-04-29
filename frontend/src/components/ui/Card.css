@@ -1,0 +1,39 @@
+.ui-card {
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  position: relative;
+  width: 100%;
+}
+
+.ui-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.ui-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition-slow);
+}
+
+.ui-card:hover img {
+  transform: scale(1.06);
+}
+
+.ui-card .ui-card-caption {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: var(--bg-overlay);
+  padding: 14px;
+  color: var(--brand-yellow);
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
+}

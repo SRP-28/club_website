@@ -1,0 +1,66 @@
+.founders-section {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: transparent;
+}
+
+.founders-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  max-width: 240px;
+}
+
+.founders-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.founders-card img {
+  width: 240px;
+  height: 240px;
+  border-radius: var(--radius-lg) !important;
+  object-fit: cover !important;
+  box-shadow: 0 0 15px rgba(247, 194, 117, 0.3) !important;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal) !important;
+  background-color: #000 !important;
+}
+
+.founders-card img:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 0 25px rgba(247, 194, 117, 0.6) !important;
+}
+
+.founder-name {
+  display: block;
+  margin-top: 10px;
+  color: var(--text-light);
+  font-weight: 600;
+  font-size: 1.1em;
+  letter-spacing: 0.5px;
+}
+
+.team-section {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.team-subtitle {
+  color: var(--brand-yellow);
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+}
+
+.team-member-card {
+  max-width: 260px;
+}
+
+.team-member-card img {
+  object-fit: contain !important;
+  background-color: #000;
+}
+
+.team-member-link {
+  text-decoration: none;
+  display: block;
+  width: 100%;
+}

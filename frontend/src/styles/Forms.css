@@ -1,0 +1,35 @@
+.form-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: var(--bg-form);
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--brand-maroon);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--brand-yellow);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #333;
+  background: #111;
+  color: var(--text-light);
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--brand-yellow);
+}

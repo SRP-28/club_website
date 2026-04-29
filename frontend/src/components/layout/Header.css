@@ -1,0 +1,80 @@
+.header {
+  background: var(--bg-overlay);
+  backdrop-filter: blur(10px);
+  border-bottom: var(--border-maroon);
+  padding: 12px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 180ms ease;
+}
+
+.brand:hover {
+  opacity: 0.85;
+}
+
+.brand img {
+  height: 50px;
+  border-radius: var(--radius-md);
+}
+
+.title {
+  font-size: 1.3em;
+  font-weight: 700;
+  color: var(--brand-yellow);
+}
+
+nav {
+  display: flex;
+  gap: 15px;
+}
+
+nav a {
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 12px;
+  color: var(--text-light);
+  transition: color var(--transition-normal);
+  position: relative;
+}
+
+/* Animated underline that expands from center */
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--brand-yellow);
+  border-radius: 2px;
+  transition: width var(--transition-normal) ease;
+}
+
+nav a:hover::after,
+nav a.active::after {
+  width: 70%;
+}
+
+nav a:hover,
+nav a.active {
+  color: var(--brand-yellow);
+}

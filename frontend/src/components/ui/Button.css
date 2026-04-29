@@ -1,0 +1,19 @@
+.btn {
+  display: inline-block;
+  padding: 10px 25px;
+  background-color: var(--brand-maroon);
+  color: var(--text-light);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color var(--transition-normal), transform 0.25s ease, box-shadow var(--transition-normal);
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: var(--brand-yellow);
+  color: var(--text-dark);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: var(--shadow-btn);
+}

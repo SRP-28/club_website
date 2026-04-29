@@ -1,0 +1,16 @@
+.page-container {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-divider {
+  margin-top: 70px;
+}
+
+.achievement-card {
+  aspect-ratio: 4 / 3;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: flex-end;
+}
