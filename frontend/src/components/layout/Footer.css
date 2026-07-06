@@ -80,3 +80,20 @@
 .footer-legal-link:hover {
   color: var(--brand-yellow);
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .footer-main {
+    padding: 20px 15px;
+    gap: 20px;
+  }
+  
+  .footer-column {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
+}
