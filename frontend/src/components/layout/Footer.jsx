@@ -25,7 +25,7 @@ const Footer = () => {
           <h4>Follow Us</h4>
           <div className="social-links">
             <a href="https://www.instagram.com/teamvajra_mmcoe/" target="_blank" rel="noopener noreferrer"><img src="/assets/insta-logo.png" alt="Instagram" /></a>
-            <a href="https://www.linkedin.com/in/teamvajrammcoe" target="_blank" rel="noopener noreferrer"><img src="/assets/linkedin-logo.png" alt="LinkedIn" /></a>
+            <a href="https://www.linkedin.com/company/teamvajrammcoe/posts/?feedView=all" target="_blank" rel="noopener noreferrer"><img src="/assets/linkedin-logo.png" alt="LinkedIn" /></a>
             <a href="https://x.com/TeamVajra_MMCOE" target="_blank" rel="noopener noreferrer"><img src="/assets/twitter-logo.png" alt="Twitter" /></a>
           </div>
           <p>
