@@ -41,12 +41,20 @@
   color: var(--brand-yellow);
 }
 
-nav {
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.nav-links {
   display: flex;
   gap: 15px;
 }
 
-nav a {
+.nav-links a {
   text-decoration: none;
   font-weight: 500;
   padding: 8px 12px;
@@ -56,7 +64,7 @@ nav a {
 }
 
 /* Animated underline that expands from center */
-nav a::after {
+.nav-links a::after {
   content: '';
   position: absolute;
   bottom: 2px;
@@ -69,12 +77,46 @@ nav a::after {
   transition: width var(--transition-normal) ease;
 }
 
-nav a:hover::after,
-nav a.active::after {
+.nav-links a:hover::after,
+.nav-links a.active::after {
   width: 70%;
 }
 
-nav a:hover,
-nav a.active {
+.nav-links a:hover,
+.nav-links a.active {
   color: var(--brand-yellow);
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+  .nav {
+    justify-content: space-between;
+    padding: 0 15px;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(15px);
+    border-bottom: 2px solid var(--brand-maroon);
+    padding: 20px;
+    gap: 20px;
+    align-items: center;
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    transition: clip-path 0.4s ease-in-out;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  .nav-links.open {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
 }

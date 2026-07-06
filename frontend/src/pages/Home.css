@@ -32,3 +32,17 @@
   margin-bottom: 20px;
   text-shadow: var(--shadow-text);
 }
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2em;
+  }
+  
+  .hero h3 {
+    font-size: 1.2em;
+  }
+  
+  .hero p {
+    font-size: 1em;
+  }
+}

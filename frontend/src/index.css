@@ -46,4 +46,10 @@ a:hover {
   margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+  .page-container {
+    padding: 30px 15px;
+  }
+}
+
 /* Admin specific global if any, although they should be in admin.css */
