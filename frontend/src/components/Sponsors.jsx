@@ -19,7 +19,7 @@ const Sponsors = () => {
   return (
     <section className="sponsor">
       <h2>Our Sponsors</h2>
-      <marquee behavior="scroll" direction="left" scrollamount="6" onMouseOver={(e) => e.target.stop()} onMouseOut={(e) => e.target.start()}>
+      <marquee behavior="scroll" direction="left" scrollamount="6" onMouseOver={(e) => e.currentTarget.stop()} onMouseOut={(e) => e.currentTarget.start()}>
         {sponsors.map((s) => (
           <a
             key={s.alt}
