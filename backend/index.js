@@ -35,7 +35,11 @@ app.post('/api/contact', async (req, res) => {
     // Use environment variables if set, otherwise fallback to Ethereal test account
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       transporter = nodemailer.createTransport({
-        service: 'gmail', // or any other service
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // upgrade later with STARTTLS
+        requireTLS: true,
+        connectionTimeout: 10000, // fail after 10 seconds instead of hanging for 2 minutes
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
