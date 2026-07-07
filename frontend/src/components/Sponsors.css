@@ -13,10 +13,37 @@
   font-size: 2em;
 }
 
+/* Uniform logo wrapper — all logos share the same box */
+.sponsor-logo-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 80px;
+  margin: 0 32px;
+  vertical-align: middle;
+}
+
 .sponsor-logo-link img {
-  height: 60px;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   opacity: 0.85;
   transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* White-background logos: blend away the white on dark UI */
+.sponsor-logo-link.blend img {
+  mix-blend-mode: lighten;
+  filter: brightness(1.05);
+}
+
+/* Dark-background logos: invert to show on dark UI cleanly */
+.sponsor-logo-link.invert img {
+  mix-blend-mode: normal;
+  filter: invert(1) brightness(0.9);
 }
 
 .sponsor-logo-link:hover img {
