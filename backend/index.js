@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 require('dns').setDefaultResultOrder('ipv4first');
 require('dotenv').config();
 
@@ -30,6 +31,35 @@ app.post('/api/contact', async (req, res) => {
   console.log(`Received contact message from ${name} (${email}): ${message}`);
   
   try {
+    // 1. Try Resend if API key is provided (Recommended for cloud hosting like Render)
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const recipient = process.env.EMAIL_TO || 'teamvajra_rc@mmcoe.edu.in';
+      
+      const { data, error } = await resend.emails.send({
+        from: 'Team Vajra <onboarding@resend.dev>',
+        to: recipient,
+        reply_to: email,
+        subject: `New Contact Form Submission from ${name}`,
+        html: `
+          <h3>New Contact Form Submission</h3>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Message:</strong></p>
+          <p>${message}</p>
+        `,
+      });
+
+      if (error) {
+        console.error('Resend Error:', error);
+        throw error;
+      }
+
+      console.log('Message sent successfully via Resend:', data.id);
+      return res.json({ success: true, message: 'Message sent successfully!' });
+    }
+
+    // 2. Fallback to Nodemailer SMTP
     let transporter;
 
     // Use environment variables if set, otherwise fallback to Ethereal test account
