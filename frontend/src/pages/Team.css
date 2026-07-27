@@ -52,6 +52,7 @@
 
 .team-member-card {
   max-width: 260px;
+  margin: 0 auto;
 }
 
 .team-member-card img {
