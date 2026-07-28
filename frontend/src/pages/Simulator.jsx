@@ -350,7 +350,7 @@ const Simulator = () => {
   return (
     <div className="sim-page">
       <div className="sim-hdr">
-        <h1 className="sim-title">🚁 Drone Flight Simulator</h1>
+        <h1 className="sim-title">Drone Flight Simulator</h1>
         <p className="sim-sub">Drag the transmitter sticks to fly · Drag the 3D view to orbit</p>
       </div>
 
