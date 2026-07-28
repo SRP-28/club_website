@@ -1,5 +1,6 @@
 import React from 'react';
 import FadeIn from '../components/FadeIn';
+import ScrollReveal from '../components/ScrollReveal';
 import SectionTitle from '../components/ui/SectionTitle';
 import './Drones.css';
 
@@ -51,7 +52,9 @@ const Drones = () => {
               <p>{drone.desc}</p>
             </div>
             <div className="drone-image-container">
-              <img src={drone.img} alt={drone.alt} />
+              <ScrollReveal style={{ borderRadius: '12px', height: '100%', width: '100%' }}>
+                <img src={drone.img} alt={drone.alt} style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
+              </ScrollReveal>
             </div>
           </div>
         </FadeIn>

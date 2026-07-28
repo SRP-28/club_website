@@ -1,5 +1,6 @@
 import React from 'react';
 import FadeIn from '../components/FadeIn';
+import ScrollReveal from '../components/ScrollReveal';
 import SectionTitle from '../components/ui/SectionTitle';
 import Grid from '../components/ui/Grid';
 import Card from '../components/ui/Card';
@@ -37,11 +38,11 @@ const Team = () => {
             { src: "/assets/aatish.jpeg", alt: "Aatish", name: "AATISH" },
             { src: "/assets/omkar.jpeg", alt: "Omkar", name: "OMKAR" },
           ].map((founder, i) => (
-            <FadeIn key={founder.name} delay={i * 0.12}>
+            <ScrollReveal key={founder.name} delay={i * 0.12}>
               <Card imageSrc={founder.src} imageAlt={founder.alt} className="founders-card">
                 <span className="founder-name">{founder.name}</span>
               </Card>
-            </FadeIn>
+            </ScrollReveal>
           ))}
         </Grid>
       </section>
@@ -56,11 +57,11 @@ const Team = () => {
 
         <Grid variant="team">
           {members.map((member, i) => (
-            <FadeIn key={member.alt} delay={(i % 4) * 0.08} className="team-member-link">
+            <ScrollReveal key={member.alt} delay={(i % 4) * 0.08} className="team-member-link">
               <a href={member.href} target="_blank" rel="noopener noreferrer" className="team-member-link">
                 <Card imageSrc={member.src} imageAlt={member.alt} className="team-member-card" />
               </a>
-            </FadeIn>
+            </ScrollReveal>
           ))}
         </Grid>
       </section>

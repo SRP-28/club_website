@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FadeIn from '../components/FadeIn';
+import ScrollReveal from '../components/ScrollReveal';
 import SectionTitle from '../components/ui/SectionTitle';
 import Grid from '../components/ui/Grid';
 import Card from '../components/ui/Card';
@@ -66,7 +67,7 @@ const Gallery = () => {
 
       <Grid>
         {images.map((img, i) => (
-          <FadeIn key={img.src} delay={(i % 5) * 0.06} style={{width: '100%'}}>
+          <ScrollReveal key={img.src} delay={(i % 5) * 0.06} style={{width: '100%'}}>
             <div
               role="button"
               tabIndex={0}
@@ -81,7 +82,7 @@ const Gallery = () => {
                 onClick={() => openLightbox(i)}
               />
             </div>
-          </FadeIn>
+          </ScrollReveal>
         ))}
       </Grid>
 

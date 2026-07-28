@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Button from '../components/ui/Button';
 import './Home.css';
 
@@ -8,7 +8,7 @@ const heroContainer = {
   hidden: {},
   show: {
     transition: {
-      staggerChildren: 0.18,
+      staggerChildren: 0.15,
     },
   },
 };
@@ -18,19 +18,32 @@ const heroItem = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
 const Home = () => {
+  const { scrollY } = useScroll();
+  
+  // Create dynamic scroll transforms for the zoom & fade out effect
+  const scale = useTransform(scrollY, [0, 500], [1, 0.92]);
+  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const y = useTransform(scrollY, [0, 500], [0, 80]);
+
   return (
     <>
-      {/* Hero Section with staggered reveal */}
-      <section className="hero">
+      {/* Hero Section with scroll-controlled zoom/fade */}
+      <section className="hero" style={{ overflow: 'hidden' }}>
         <motion.div
           variants={heroContainer}
           initial="hidden"
           animate="show"
+          style={{
+            scale,
+            opacity,
+            y,
+            willChange: 'transform, opacity'
+          }}
         >
           <motion.h1 variants={heroItem}>Throttling to Great Heights</motion.h1>
           <motion.h3 variants={heroItem}>About Us</motion.h3>
