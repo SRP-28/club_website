@@ -9,17 +9,15 @@ const FadeIn = ({ children, delay = 0, className = '', once = false, style }) =>
     <motion.div
       className={className}
       style={{
-        perspective: 1000,
+        willChange: "transform, opacity",
         ...style
       }}
-      initial={{ opacity: 0, y: 45, scale: 0.92, rotateX: 12 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
-      viewport={{ once, margin: '-60px' }}
+      initial={{ opacity: 0, y: 24, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once, margin: '-40px' }}
       transition={{
-        type: "spring",
-        stiffness: 65,
-        damping: 13,
-        mass: 0.8,
+        duration: 0.4,
+        ease: [0.16, 1, 0.3, 1], // Ultra-snappy custom ease-out curve
         delay,
       }}
     >
