@@ -131,16 +131,24 @@ const Simulator = () => {
   /* ── Three.js setup ── */
   useEffect(() => {
     const mount = mountRef.current;
-    const W = mount.clientWidth;
-    const H = mount.clientHeight;
+    if (!mount) return;
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(W, H);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
-    mount.appendChild(renderer.domElement);
+    let rafId, lcdTimer;
+    let cleanupFns = [];
+
+    // Defer init by one frame so the DOM has real layout dimensions
+    const initId = requestAnimationFrame(() => {
+      const W = mount.clientWidth  || 920;
+      const H = mount.clientHeight || 420;
+
+      // Renderer
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(W, H);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x06080c, 1);   // solid dark bg — no transparent black
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+      mount.appendChild(renderer.domElement);
 
     // Scene
     const scene = new THREE.Scene();
@@ -162,7 +170,9 @@ const Simulator = () => {
     rim.position.set(-5, 3, -5);
     scene.add(rim);
 
-    scene.add(Object.assign(new THREE.PointLight(0x4488ff, 1.5, 12), { position: new THREE.Vector3(0, -4, 0) }));
+      const fill = new THREE.PointLight(0x4488ff, 1.5, 12);
+      fill.position.set(0, -4, 0);
+      scene.add(fill);
 
     // Grid ground
     const grid = new THREE.GridHelper(28, 28, 0x2a2a4a, 0x191928);
@@ -184,8 +194,10 @@ const Simulator = () => {
     /* ── Drone Geometry ── */
     const drone = new THREE.Group();
 
-    // Body plate
-    drone.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.14, 0.9), mBody), { castShadow: true }));
+      // Body plate
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.14, 0.9), mBody);
+      body.castShadow = true;
+      drone.add(body);
 
     // FC dome
     const dome = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.27, 0.14, 16), mBody);
@@ -260,7 +272,7 @@ const Simulator = () => {
     window.addEventListener('mouseup',   onMU);
 
     /* ── Animation loop ── */
-    let t = 0, rafId;
+    let t = 0;
     const animate = () => {
       rafId = requestAnimationFrame(animate);
       t += 0.004;
@@ -294,7 +306,7 @@ const Simulator = () => {
     animate();
 
     // LCD poll
-    const lcdTimer = setInterval(() => {
+    lcdTimer = setInterval(() => {
       setLcd({
         thr:  Math.round(Math.max(0, ly.current) * 100),
         yaw:  Math.round(lx.current  * 100),
@@ -305,22 +317,29 @@ const Simulator = () => {
 
     // Resize
     const onResize = () => {
-      const w = mount.clientWidth, h = mount.clientHeight;
+      const w = mount.clientWidth  || mount.offsetWidth;
+      const h = mount.clientHeight || mount.offsetHeight;
       renderer.setSize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     };
     window.addEventListener('resize', onResize);
 
+    cleanupFns = [
+      () => { cancelAnimationFrame(rafId); },
+      () => { clearInterval(lcdTimer); },
+      () => { window.removeEventListener('resize',     onResize); },
+      () => { window.removeEventListener('mousemove',  onMM); },
+      () => { window.removeEventListener('mouseup',    onMU); },
+      () => { mount.removeEventListener('mousedown',   onMD); },
+      () => { renderer.dispose(); },
+      () => { if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement); },
+    ];
+    }); // end requestAnimationFrame
+
     return () => {
-      cancelAnimationFrame(rafId);
-      clearInterval(lcdTimer);
-      window.removeEventListener('resize',     onResize);
-      window.removeEventListener('mousemove',  onMM);
-      window.removeEventListener('mouseup',    onMU);
-      mount.removeEventListener('mousedown',   onMD);
-      renderer.dispose();
-      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
+      cancelAnimationFrame(initId);
+      cleanupFns.forEach(fn => fn());
     };
   }, []);
 
