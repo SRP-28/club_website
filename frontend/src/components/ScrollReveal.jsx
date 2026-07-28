@@ -2,37 +2,28 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 /**
- * ScrollReveal - A premium animation wrapper that performs a smooth clip-path
- * reveal (mask wipe) combined with a scale-down effect for images and cards.
+ * ScrollReveal - A premium animation wrapper that performs a smooth 
+ * blur-to-focus reveal, gentle scale-up, and translation with hardware acceleration.
  */
 const ScrollReveal = ({ children, delay = 0, className = '', once = false, style }) => {
   return (
-    <div 
-      className={className} 
-      style={{ 
-        overflow: 'hidden', 
-        position: 'relative', 
-        borderRadius: 'inherit',
-        ...style 
+    <motion.div
+      className={className}
+      style={{
+        willChange: "transform, opacity, filter",
+        ...style
+      }}
+      initial={{ opacity: 0, y: 35, scale: 0.97, filter: 'blur(8px)' }}
+      whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      viewport={{ once, margin: '-60px' }}
+      transition={{
+        duration: 0.8,
+        ease: [0.16, 1, 0.3, 1], // Premium Apple-style ease-out
+        delay,
       }}
     >
-      <motion.div
-        initial={{ clipPath: 'inset(100% 0% 0% 0%)', scale: 1.08 }}
-        whileInView={{ clipPath: 'inset(0% 0% 0% 0%)', scale: 1 }}
-        viewport={{ once, margin: '-50px' }}
-        transition={{
-          clipPath: { duration: 0.65, ease: [0.16, 1, 0.3, 1], delay },
-          scale: { duration: 0.85, ease: [0.16, 1, 0.3, 1], delay }
-        }}
-        style={{ 
-          width: '100%', 
-          height: '100%', 
-          willChange: 'clip-path, transform' 
-        }}
-      >
-        {children}
-      </motion.div>
-    </div>
+      {children}
+    </motion.div>
   );
 };
 
