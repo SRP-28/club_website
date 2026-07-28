@@ -2,23 +2,24 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 /**
- * ScrollReveal - A premium animation wrapper that performs a smooth 
- * blur-to-focus reveal, gentle scale-up, and translation with hardware acceleration.
+ * ScrollReveal - Premium scroll animation using only GPU-composited
+ * transform + opacity properties. No blur, no repaints.
+ * Gives a satisfying scale-up + slide-up reveal on viewport entry.
  */
 const ScrollReveal = ({ children, delay = 0, className = '', once = false, style }) => {
   return (
     <motion.div
       className={className}
       style={{
-        willChange: "transform, opacity, filter",
+        willChange: "transform, opacity",
         ...style
       }}
-      initial={{ opacity: 0, y: 35, scale: 0.97, filter: 'blur(8px)' }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-      viewport={{ once, margin: '-60px' }}
+      initial={{ opacity: 0, y: 40, scale: 0.96 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once, margin: '-50px' }}
       transition={{
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1], // Premium Apple-style ease-out
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1], // Expo ease-out — fast start, smooth landing
         delay,
       }}
     >
