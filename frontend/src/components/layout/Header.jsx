@@ -38,6 +38,7 @@ const Header = () => {
           <NavLink to="/gallery" onClick={closeMenu} className={({ isActive }) => (isActive ? 'active' : '')}>Gallery</NavLink>
           <NavLink to="/team" onClick={closeMenu} className={({ isActive }) => (isActive ? 'active' : '')}>Team</NavLink>
           <NavLink to="/blog" onClick={closeMenu} className={({ isActive }) => (isActive ? 'active' : '')}>Blogs</NavLink>
+          <NavLink to="/simulator" onClick={closeMenu} className={({ isActive }) => (isActive ? 'active' : '')} style={({ isActive }) => isActive ? {} : {}}>Simulator 🚁</NavLink>
           <NavLink to="/contact" onClick={closeMenu} className={({ isActive }) => (isActive ? 'active' : '')}>Contact</NavLink>
           {isAdmin && (
             <NavLink to="/admin/dashboard" onClick={closeMenu} className={({ isActive }) => (isActive ? 'active' : '')} style={{ color: 'var(--brand-maroon)' }}>Admin</NavLink>

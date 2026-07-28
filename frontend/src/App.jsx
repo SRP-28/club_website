@@ -17,6 +17,7 @@ import Legal from './pages/Legal';
 import Login from './pages/Login';
 import Dashboard from './pages/admin/Dashboard';
 import Editor from './pages/admin/Editor';
+import Simulator from './pages/Simulator';
 
 function App() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -49,6 +50,7 @@ function App() {
           <Route path="privacy-policy" element={<Legal title="Privacy Policy" />} />
           <Route path="disclaimer" element={<Legal title="Disclaimer" />} />
           <Route path="terms-of-service" element={<Legal title="Terms of Service" />} />
+          <Route path="simulator" element={<Simulator />} />
           <Route path="*" element={<Home />} />
         </Route>
         <Route path="/login" element={<Login />} />
