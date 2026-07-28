@@ -351,6 +351,13 @@
   animation: sigPulse 2s ease infinite;
 }
 
+.lcd-disarmed {
+  font-family: 'Courier New', monospace;
+  font-size: 0.55rem;
+  color: #ef4444;
+  animation: sigPulse 1s ease infinite;
+}
+
 .lcd-mode {
   font-family: 'Courier New', monospace;
   font-size: 0.55rem;

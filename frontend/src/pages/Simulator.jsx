@@ -128,6 +128,18 @@ const Simulator = () => {
   /* LCD display state (80 ms poll) */
   const [lcd, setLcd] = useState({ thr: 0, yaw: 0, ptch: 0, roll: 0 });
 
+  /* ARM / DISARM */
+  const [isArmed, setIsArmed] = useState(false);
+  const isArmedRef = useRef(false); // ref so RAF can read it without stale closure
+
+  const toggleArm = useCallback(() => {
+    setIsArmed(prev => {
+      const next = !prev;
+      isArmedRef.current = next;
+      return next;
+    });
+  }, []);
+
   /* ── Three.js setup ── */
   useEffect(() => {
     const mount = mountRef.current;
@@ -277,9 +289,14 @@ const Simulator = () => {
       rafId = requestAnimationFrame(animate);
       t += 0.004;
 
-      // Spin propellers — faster with throttle
-      const spd = 0.22 + Math.max(0, ly.current) * 0.18;
-      propMeshes.forEach(({ mesh, dir }) => { mesh.rotation.y += dir * spd; });
+      // Spin propellers — stop when disarmed
+      if (isArmedRef.current) {
+        const spd = 0.22 + Math.max(0, ly.current) * 0.18;
+        propMeshes.forEach(({ mesh, dir }) => { mesh.rotation.y += dir * spd; });
+      } else {
+        // Slowly decelerate to a stop
+        propMeshes.forEach(({ mesh, dir }) => { mesh.rotation.y += dir * 0.01; });
+      }
 
       // Camera
       const R = 7;
@@ -290,16 +307,24 @@ const Simulator = () => {
       );
       camera.lookAt(0, drone.position.y, 0);
 
-      // Drone rotations
-      drone.rotation.z = THREE.MathUtils.lerp(drone.rotation.z, -rx.current * (Math.PI / 5.5), 0.08);
-      drone.rotation.x = THREE.MathUtils.lerp(drone.rotation.x, -ry.current * (Math.PI / 5.5), 0.08);
-      droneYaw.current += lx.current * 0.028;
-      drone.rotation.y  = droneYaw.current;
+      // Drone rotations — only when armed
+      if (isArmedRef.current) {
+        drone.rotation.z = THREE.MathUtils.lerp(drone.rotation.z, -rx.current * (Math.PI / 5.5), 0.08);
+        drone.rotation.x = THREE.MathUtils.lerp(drone.rotation.x, -ry.current * (Math.PI / 5.5), 0.08);
+        droneYaw.current += lx.current * 0.028;
+        drone.rotation.y  = droneYaw.current;
 
-      // Throttle altitude + hover bob
-      droneAlt.current   = THREE.MathUtils.lerp(droneAlt.current, Math.max(0, ly.current) * 1.8, 0.04);
-      const bob          = ly.current > 0.05 ? Math.sin(t * 1.5) * 0.07 : 0;
-      drone.position.y   = THREE.MathUtils.lerp(drone.position.y, droneAlt.current + bob, 0.05);
+        // Throttle altitude + hover bob
+        droneAlt.current = THREE.MathUtils.lerp(droneAlt.current, Math.max(0, ly.current) * 1.8, 0.04);
+        const bob = ly.current > 0.05 ? Math.sin(t * 1.5) * 0.07 : 0;
+        drone.position.y = THREE.MathUtils.lerp(drone.position.y, droneAlt.current + bob, 0.05);
+      } else {
+        // Return to level & land when disarmed
+        drone.rotation.z = THREE.MathUtils.lerp(drone.rotation.z, 0, 0.05);
+        drone.rotation.x = THREE.MathUtils.lerp(drone.rotation.x, 0, 0.05);
+        droneAlt.current = THREE.MathUtils.lerp(droneAlt.current, 0, 0.03);
+        drone.position.y = THREE.MathUtils.lerp(drone.position.y, 0, 0.03);
+      }
 
       renderer.render(scene, camera);
     };
@@ -343,8 +368,14 @@ const Simulator = () => {
     };
   }, []);
 
-  const onLeft  = useCallback((x, y) => { lx.current = x; ly.current = y; }, []);
-  const onRight = useCallback((x, y) => { rx.current = x; ry.current = y; }, []);
+  const onLeft  = useCallback((x, y) => {
+    if (!isArmedRef.current) return; // ignore controls when disarmed
+    lx.current = x; ly.current = y;
+  }, []);
+  const onRight = useCallback((x, y) => {
+    if (!isArmedRef.current) return;
+    rx.current = x; ry.current = y;
+  }, []);
 
   /* ── Render ── */
   return (
@@ -424,7 +455,9 @@ const Simulator = () => {
                     </div>
                   </div>
                   <div className="lcd-footer">
-                    <span className="lcd-linked">● LINKED</span>
+                    <span className={isArmed ? 'lcd-linked' : 'lcd-disarmed'}>
+                      {isArmed ? '● ARMED' : '○ DISARMED'}
+                    </span>
                     <span className="lcd-mode">MODE 2</span>
                   </div>
                 </div>
@@ -436,9 +469,11 @@ const Simulator = () => {
                   <div className="sw-label">SWA</div>
                   <div className="sw-body"><div className="sw-lever" /></div>
                 </div>
-                <div className="tx-sw">
-                  <div className="sw-label">ARM</div>
-                  <div className="sw-body sw-body--on"><div className="sw-lever sw-lever--on" /></div>
+                <div className="tx-sw" onClick={toggleArm} style={{ cursor: 'pointer' }} title="Click to ARM / DISARM">
+                  <div className="sw-label" style={{ color: isArmed ? '#4ade80' : 'rgba(255,255,255,0.3)' }}>ARM</div>
+                  <div className={`sw-body ${isArmed ? 'sw-body--on' : ''}`}>
+                    <div className={`sw-lever ${isArmed ? 'sw-lever--on' : ''}`} />
+                  </div>
                 </div>
                 <div className="tx-sw">
                   <div className="sw-label">RTH</div>
@@ -486,6 +521,11 @@ const Simulator = () => {
         <div className="legend-item">
           <span className="legend-dot" style={{ background: '#7dd3fc' }} />
           <span><strong>Right stick</strong> — Pitch + Roll (self-centres)</span>
+        </div>
+        <div className="legend-sep" />
+        <div className="legend-item">
+          <span className="legend-dot" style={{ background: isArmed ? '#4ade80' : '#ef4444' }} />
+          <span><strong>ARM switch</strong> — Click to {isArmed ? 'disarm (stops drone)' : 'arm (enables controls)'}</span>
         </div>
       </div>
 
