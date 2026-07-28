@@ -5,6 +5,7 @@ import { db, auth } from '../firebase';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
 import DroneLoader from '../components/ui/DroneLoader';
+import FadeIn from '../components/FadeIn';
 import './Blog.css';
 
 const formatDate = (timestamp) => {
@@ -290,25 +291,27 @@ const Blog = () => {
       marginTop: 0
     }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        <div className="page-title">
-          <div>
-            <h1>Flight Path: The Official Team Vajra Blog</h1>
-            <p>Race recaps, build logs, and behind-the-scenes stories from the Team Vajra hangar.</p>
+        <FadeIn>
+          <div className="page-title">
+            <div>
+              <h1>Flight Path: The Official Team Vajra Blog</h1>
+              <p>Race recaps, build logs, and behind-the-scenes stories from the Team Vajra hangar.</p>
+            </div>
+            <div className="auth-buttons">
+              {!user ? (
+                <button onClick={handleSignIn} className="member-login-link" style={{ background: 'transparent' }}>
+                  Sign in with Google
+                </button>
+              ) : (
+                <div id="userSignedIn" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span className="signed-in-name">👤 {user.displayName || user.email}</span>
+                  <button onClick={handleSignOut} className="sign-out-btn">Sign Out</button>
+                </div>
+              )}
+              <Link to="/login" className="member-login-link">✍️ Member Login</Link>
+            </div>
           </div>
-          <div className="auth-buttons">
-            {!user ? (
-              <button onClick={handleSignIn} className="member-login-link" style={{ background: 'transparent' }}>
-                Sign in with Google
-              </button>
-            ) : (
-              <div id="userSignedIn" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span className="signed-in-name">👤 {user.displayName || user.email}</span>
-                <button onClick={handleSignOut} className="sign-out-btn">Sign Out</button>
-              </div>
-            )}
-            <Link to="/login" className="member-login-link">✍️ Member Login</Link>
-          </div>
-        </div>
+        </FadeIn>
 
         <div className="featured-label">Featured</div>
 
@@ -319,7 +322,11 @@ const Blog = () => {
             <p>No blogs published yet. Check back soon!</p>
           </div>
         ) : (
-          blogs.map(blog => <BlogCard key={blog.id} blog={blog} id={blog.id} user={user} />)
+          blogs.map((blog, i) => (
+            <FadeIn key={blog.id} delay={i * 0.08}>
+              <BlogCard blog={blog} id={blog.id} user={user} />
+            </FadeIn>
+          ))
         )}
       </div>
     </div>
