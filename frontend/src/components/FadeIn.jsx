@@ -8,13 +8,18 @@ const FadeIn = ({ children, delay = 0, className = '', once = false, style }) =>
   return (
     <motion.div
       className={className}
-      style={style}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      style={{
+        perspective: 1000,
+        ...style
+      }}
+      initial={{ opacity: 0, y: 45, scale: 0.92, rotateX: 12 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
       viewport={{ once, margin: '-60px' }}
       transition={{
-        duration: 0.55,
-        ease: [0.25, 0.1, 0.25, 1],
+        type: "spring",
+        stiffness: 65,
+        damping: 13,
+        mass: 0.8,
         delay,
       }}
     >
