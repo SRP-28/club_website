@@ -1,6 +1,6 @@
 import React from 'react';
 import FadeIn from '../components/FadeIn';
-import ScrollReveal from '../components/ScrollReveal';
+import ScrollZoomCard from '../components/ScrollZoomCard';
 import SectionTitle from '../components/ui/SectionTitle';
 import './Drones.css';
 
@@ -45,19 +45,17 @@ const Drones = () => {
       </FadeIn>
 
       {drones.map((drone, i) => (
-        <FadeIn key={drone.name} delay={0.05}>
+        <ScrollZoomCard key={drone.name} style={{ marginBottom: '0' }}>
           <div className={`drone ${i % 2 === 1 ? 'reverse' : ''}`}>
             <div className="drone-info">
               <h3>{drone.name}</h3>
               <p>{drone.desc}</p>
             </div>
             <div className="drone-image-container">
-              <ScrollReveal style={{ borderRadius: '12px', height: '100%', width: '100%' }}>
-                <img src={drone.img} alt={drone.alt} style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
-              </ScrollReveal>
+              <img src={drone.img} alt={drone.alt} style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
             </div>
           </div>
-        </FadeIn>
+        </ScrollZoomCard>
       ))}
     </section>
   );
