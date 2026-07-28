@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
 import DroneLoader from '../components/ui/DroneLoader';
 import FadeIn from '../components/FadeIn';
+import ScrollReveal from '../components/ScrollReveal';
 import './Blog.css';
 
 const formatDate = (timestamp) => {
@@ -323,9 +324,9 @@ const Blog = () => {
           </div>
         ) : (
           blogs.map((blog, i) => (
-            <FadeIn key={blog.id} delay={i * 0.08}>
+            <ScrollReveal key={blog.id} delay={i * 0.08} style={{ borderRadius: '14px', marginBottom: '18px' }}>
               <BlogCard blog={blog} id={blog.id} user={user} />
-            </FadeIn>
+            </ScrollReveal>
           ))
         )}
       </div>
