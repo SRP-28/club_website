@@ -239,6 +239,8 @@ const Simulator = () => {
             if (child.material) {
               child.material.roughness = 0.35;
               child.material.metalness = 0.65;
+              // Disable GLB vertex colors if any are affecting shading
+              child.material.vertexColors = false;
             }
           }
         });
@@ -263,8 +265,8 @@ const Simulator = () => {
           // 2. 3 Tapered & Pitched Blades spaced 120° apart
           const bladeMat = new THREE.MeshStandardMaterial({
             color: color,
-            metalness: 0.3,
-            roughness: 0.2,
+            metalness: 0.2,
+            roughness: 0.3,
             side: THREE.DoubleSide
           });
 
@@ -292,7 +294,7 @@ const Simulator = () => {
           const blurMat = new THREE.MeshStandardMaterial({
             color: color,
             transparent: true,
-            opacity: 0.18,
+            opacity: 0.22,
             side: THREE.DoubleSide
           });
           const blurDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.01, 24), blurMat);
@@ -307,11 +309,14 @@ const Simulator = () => {
         const armZ = 1.05;
         const propY = 0.14;
 
+        // ALL 4 PROPELLERS ARE ELECTRIC BLUE (0x1d4ed8)
+        const PROP_COLOR = 0x1d4ed8;
+
         const motorLocs = [
-          { x:  armX, z:  armZ, color: 0x3b82f6 }, // Front-Left (Blue prop)
-          { x: -armX, z:  armZ, color: 0x3b82f6 }, // Front-Right (Blue prop)
-          { x: -armX, z: -armZ, color: 0x3b82f6 }, // Rear-Right (Blue prop)
-          { x:  armX, z: -armZ, color: 0x3b82f6 }, // Rear-Left (Blue prop)
+          { x:  armX, z:  armZ, color: PROP_COLOR }, // Front-Left (Blue)
+          { x: -armX, z:  armZ, color: PROP_COLOR }, // Front-Right (Blue)
+          { x: -armX, z: -armZ, color: PROP_COLOR }, // Rear-Right (Blue)
+          { x:  armX, z: -armZ, color: PROP_COLOR }, // Rear-Left (Blue)
         ];
 
         motorLocs.forEach(({ x, z, color }, i) => {
