@@ -210,18 +210,30 @@ const Simulator = () => {
       (gltf) => {
         const model = gltf.scene;
 
-        // Compute Bounding Box to center & scale properly
-        const bbox = new THREE.Box3().setFromObject(model);
-        const center = bbox.getCenter(new THREE.Vector3());
+        // Container object for model + propellers together
+        const droneModelGroup = new THREE.Group();
+
+        // Check raw bounding box
+        const rawBox = new THREE.Box3().setFromObject(model);
+        const rawCenter = rawBox.getCenter(new THREE.Vector3());
+
+        // Shift model so its geometric center is at (0,0,0)
+        model.position.sub(rawCenter);
+
+        // Rotate model if needed: Drone.glb was created in Z-up orientation (Z from 0 to 16, X/Y from -59 to 59)
+        // Rotate -90 degrees around X axis so Z becomes Y (Up)
+        model.rotation.x = -Math.PI / 2;
+
+        droneModelGroup.add(model);
+
+        // Re-calculate bounding box after rotation
+        const bbox = new THREE.Box3().setFromObject(droneModelGroup);
         const size = bbox.getSize(new THREE.Vector3());
 
-        // Center model mesh offset
-        model.position.sub(center);
-
-        // Scale to a nice simulator size (~2.4 units wide)
-        const maxDim = Math.max(size.x, size.y, size.z);
+        // Scale to standard simulator size (~2.4 units wide)
+        const maxDim = Math.max(size.x, size.z);
         const scale = 2.4 / maxDim;
-        model.scale.set(scale, scale, scale);
+        droneModelGroup.scale.set(scale, scale, scale);
 
         // Enable shadows & refine materials
         model.traverse((child) => {
@@ -229,19 +241,16 @@ const Simulator = () => {
             child.castShadow = true;
             child.receiveShadow = true;
             if (child.material) {
-              child.material.roughness = 0.3;
-              child.material.metalness = 0.7;
+              child.material.roughness = 0.35;
+              child.material.metalness = 0.65;
             }
           }
         });
 
-        drone.add(model);
-
-        // Add 4 propeller assemblies over the arms/motors
-        // Positions based on scaled drone dimensions
-        const armX = size.x * scale * 0.38;
-        const armZ = size.z * scale * 0.38;
-        const propY = (size.y * scale * 0.15);
+        // 4 Propellers aligned to the four corners/motors of the frame
+        const armX = (size.x / 2) * 0.72;
+        const armZ = (size.z / 2) * 0.72;
+        const propY = (size.y / 2) + 0.05;
 
         const motorLocs = [
           { x:  armX, z:  armZ },
@@ -251,25 +260,30 @@ const Simulator = () => {
         ];
 
         motorLocs.forEach(({ x, z }, i) => {
-          // Propeller blade disk
-          const propDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.02, 12), mProp[i % 2]);
-          propDisc.position.set(x, propY, z);
+          const propGroup = new THREE.Group();
+          propGroup.position.set(x, propY, z);
 
-          // Add realistic 2-blade visual lines inside the prop disk
-          const bladeGeom = new THREE.BoxGeometry(0.92, 0.025, 0.08);
-          const bladeMat  = new THREE.MeshStandardMaterial({ color: 0x222233, metalness: 0.8 });
+          // Propeller blade disk
+          const propDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.02, 12), mProp[i % 2]);
+
+          // Realistic 2-blade bar
+          const bladeGeom = new THREE.BoxGeometry(0.88, 0.025, 0.08);
+          const bladeMat  = new THREE.MeshStandardMaterial({ color: 0x111122, metalness: 0.8 });
           const blades    = new THREE.Mesh(bladeGeom, bladeMat);
           propDisc.add(blades);
 
-          drone.add(propDisc);
-          propMeshes.push({ mesh: propDisc, dir: i % 2 === 0 ? 1 : -1 });
+          propGroup.add(propDisc);
 
           // Blur outer ring
-          const ring = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.015, 6, 44), mRing);
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(0.44, 0.012, 6, 44), mRing);
           ring.rotation.x = Math.PI / 2;
-          ring.position.set(x, propY, z);
-          drone.add(ring);
+          propGroup.add(ring);
+
+          droneModelGroup.add(propGroup);
+          propMeshes.push({ mesh: propDisc, dir: i % 2 === 0 ? 1 : -1 });
         });
+
+        drone.add(droneModelGroup);
       },
       undefined,
       (err) => console.error('Failed to load Drone.glb:', err)
