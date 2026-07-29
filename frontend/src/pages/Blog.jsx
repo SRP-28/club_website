@@ -276,7 +276,8 @@ const Blog = () => {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
     } catch (err) {
-      console.error('Sign in failed', err);
+      console.error('Sign in failed:', err);
+      alert(`Google Sign-In Error: ${err.message || 'Popup closed or blocked'}\n\nPlease ensure popup blockers are disabled and your domain is authorized in Firebase Console.`);
     }
   };
 
