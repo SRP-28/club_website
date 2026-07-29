@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import './Simulator.css';
 
 /* ══════════════════════════════════════════════════════
@@ -170,9 +171,9 @@ const Simulator = () => {
     const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 100);
 
     // Lights
-    scene.add(new THREE.AmbientLight(0x1a1a3a, 7));
+    scene.add(new THREE.AmbientLight(0xffffff, 3));
 
-    const sun = new THREE.DirectionalLight(0xffffff, 5);
+    const sun = new THREE.DirectionalLight(0xffffff, 4);
     sun.position.set(5, 10, 7);
     sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
@@ -182,92 +183,97 @@ const Simulator = () => {
     rim.position.set(-5, 3, -5);
     scene.add(rim);
 
-      const fill = new THREE.PointLight(0x4488ff, 1.5, 12);
-      fill.position.set(0, -4, 0);
-      scene.add(fill);
+    const fill = new THREE.PointLight(0x4488ff, 1.5, 12);
+    fill.position.set(0, -4, 0);
+    scene.add(fill);
 
     // Grid ground
     const grid = new THREE.GridHelper(28, 28, 0x2a2a4a, 0x191928);
     grid.position.y = -3.8;
     scene.add(grid);
 
-    /* ── Drone Materials ── */
-    const mBody  = new THREE.MeshStandardMaterial({ color: 0x12121f, metalness: 0.85, roughness: 0.15 });
-    const mArm   = new THREE.MeshStandardMaterial({ color: 0x8b0000, metalness: 0.7,  roughness: 0.3  });
-    const mMotor = new THREE.MeshStandardMaterial({ color: 0xf7c275, metalness: 0.95, roughness: 0.05 });
-    const mProp  = [
-      new THREE.MeshStandardMaterial({ color: 0xccccdd, transparent: true, opacity: 0.82, side: THREE.DoubleSide }),
-      new THREE.MeshStandardMaterial({ color: 0xaaaacc, transparent: true, opacity: 0.82, side: THREE.DoubleSide }),
-    ];
-    const mGlass = new THREE.MeshStandardMaterial({ color: 0x88bbff, transparent: true, opacity: 0.65 });
-    const mGear  = new THREE.MeshStandardMaterial({ color: 0x2a2a44, metalness: 0.5, roughness: 0.5 });
-    const mRing  = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, transparent: true, opacity: 0.18 });
-
-    /* ── Drone Geometry ── */
+    /* ── Root Drone Group ── */
     const drone = new THREE.Group();
-
-      // Body plate
-      const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.14, 0.9), mBody);
-      body.castShadow = true;
-      drone.add(body);
-
-    // FC dome
-    const dome = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.27, 0.14, 16), mBody);
-    dome.position.y = 0.13;
-    drone.add(dome);
-
-    // Camera eye
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), mGlass);
-    eye.position.set(0, 0.04, 0.46);
-    drone.add(eye);
-
-    // 4 arms + motors + props
-    const ARM_DIST = 1.1;
-    const armDefs  = [
-      { x:  ARM_DIST, z:  ARM_DIST },
-      { x: -ARM_DIST, z:  ARM_DIST },
-      { x: -ARM_DIST, z: -ARM_DIST },
-      { x:  ARM_DIST, z: -ARM_DIST },
-    ];
-    const propMeshes = [];
-
-    armDefs.forEach(({ x, z }, i) => {
-      // Arm
-      const arm = new THREE.Mesh(
-        new THREE.BoxGeometry(0.09, 0.055, Math.sqrt(2) * ARM_DIST),
-        mArm
-      );
-      arm.position.set(x / 2, 0, z / 2);
-      arm.rotation.y = Math.atan2(x, z);
-      arm.castShadow = true;
-      drone.add(arm);
-
-      // Motor
-      const motor = new THREE.Mesh(new THREE.CylinderGeometry(0.135, 0.115, 0.14, 14), mMotor);
-      motor.position.set(x, 0.08, z);
-      drone.add(motor);
-
-      // Prop disc
-      const prop = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.46, 0.022, 8), mProp[i % 2]);
-      prop.position.set(x, 0.16, z);
-      drone.add(prop);
-      propMeshes.push({ mesh: prop, dir: i % 2 === 0 ? 1 : -1 });
-
-      // Blur ring
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.39, 0.013, 6, 44), mRing);
-      ring.rotation.x = Math.PI / 2;
-      ring.position.set(x, 0.16, z);
-      drone.add(ring);
-    });
-
-    // Landing legs
-    [[-0.38, -0.38], [0.38, -0.38], [-0.38, 0.38], [0.38, 0.38]].forEach(([lx, lz]) => {
-      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.42, 6), mGear);
-      leg.position.set(lx, -0.23, lz);
-      drone.add(leg);
-    });
-
     scene.add(drone);
+
+    const propMeshes = [];
+    const mProp = [
+      new THREE.MeshStandardMaterial({ color: 0xddeeff, transparent: true, opacity: 0.85, side: THREE.DoubleSide }),
+      new THREE.MeshStandardMaterial({ color: 0xbbccdd, transparent: true, opacity: 0.85, side: THREE.DoubleSide }),
+    ];
+    const mRing = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, transparent: true, opacity: 0.2 });
+
+    /* ── Load Custom Drone GLB ── */
+    const loader = new GLTFLoader();
+    loader.load(
+      '/Drone.glb',
+      (gltf) => {
+        const model = gltf.scene;
+
+        // Compute Bounding Box to center & scale properly
+        const bbox = new THREE.Box3().setFromObject(model);
+        const center = bbox.getCenter(new THREE.Vector3());
+        const size = bbox.getSize(new THREE.Vector3());
+
+        // Center model mesh offset
+        model.position.sub(center);
+
+        // Scale to a nice simulator size (~2.4 units wide)
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 2.4 / maxDim;
+        model.scale.set(scale, scale, scale);
+
+        // Enable shadows & refine materials
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            if (child.material) {
+              child.material.roughness = 0.3;
+              child.material.metalness = 0.7;
+            }
+          }
+        });
+
+        drone.add(model);
+
+        // Add 4 propeller assemblies over the arms/motors
+        // Positions based on scaled drone dimensions
+        const armX = size.x * scale * 0.38;
+        const armZ = size.z * scale * 0.38;
+        const propY = (size.y * scale * 0.15);
+
+        const motorLocs = [
+          { x:  armX, z:  armZ },
+          { x: -armX, z:  armZ },
+          { x: -armX, z: -armZ },
+          { x:  armX, z: -armZ },
+        ];
+
+        motorLocs.forEach(({ x, z }, i) => {
+          // Propeller blade disk
+          const propDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.02, 12), mProp[i % 2]);
+          propDisc.position.set(x, propY, z);
+
+          // Add realistic 2-blade visual lines inside the prop disk
+          const bladeGeom = new THREE.BoxGeometry(0.92, 0.025, 0.08);
+          const bladeMat  = new THREE.MeshStandardMaterial({ color: 0x222233, metalness: 0.8 });
+          const blades    = new THREE.Mesh(bladeGeom, bladeMat);
+          propDisc.add(blades);
+
+          drone.add(propDisc);
+          propMeshes.push({ mesh: propDisc, dir: i % 2 === 0 ? 1 : -1 });
+
+          // Blur outer ring
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.015, 6, 44), mRing);
+          ring.rotation.x = Math.PI / 2;
+          ring.position.set(x, propY, z);
+          drone.add(ring);
+        });
+      },
+      undefined,
+      (err) => console.error('Failed to load Drone.glb:', err)
+    );
 
     /* ── Canvas drag → camera orbit ── */
     const onMD  = (e) => { camDrag.current = true;  camPrev.current = { x: e.clientX, y: e.clientY }; };
@@ -289,13 +295,13 @@ const Simulator = () => {
       rafId = requestAnimationFrame(animate);
       t += 0.004;
 
-      // Spin propellers — stop when disarmed
+      // Spin propellers — ONLY spin when ARMED
       if (isArmedRef.current) {
-        const spd = 0.22 + Math.max(0, ly.current) * 0.18;
+        const spd = 0.28 + Math.max(0, ly.current) * 0.25;
         propMeshes.forEach(({ mesh, dir }) => { mesh.rotation.y += dir * spd; });
       } else {
-        // Slowly decelerate to a stop
-        propMeshes.forEach(({ mesh, dir }) => { mesh.rotation.y += dir * 0.01; });
+        // Slowly decelerate to a stop when disarmed
+        propMeshes.forEach(({ mesh, dir }) => { mesh.rotation.y += dir * 0.005; });
       }
 
       // Camera
@@ -412,7 +418,7 @@ const Simulator = () => {
               <div className="tx-axis-label tx-axis-bot">← YAW →</div>
             </div>
 
-            {/* CENTER — LCD + switches */}
+            {/* CENTER — LCD + ARM switch */}
             <div className="tx-center-col">
               {/* LCD screen */}
               <div className="tx-lcd-frame">
@@ -463,21 +469,13 @@ const Simulator = () => {
                 </div>
               </div>
 
-              {/* Aux toggle switches */}
-              <div className="tx-switches">
-                <div className="tx-sw">
-                  <div className="sw-label">SWA</div>
-                  <div className="sw-body"><div className="sw-lever" /></div>
-                </div>
+              {/* Single ARM toggle switch */}
+              <div className="tx-switches" style={{ justifyContent: 'center' }}>
                 <div className="tx-sw" onClick={toggleArm} style={{ cursor: 'pointer' }} title="Click to ARM / DISARM">
-                  <div className="sw-label" style={{ color: isArmed ? '#4ade80' : 'rgba(255,255,255,0.3)' }}>ARM</div>
+                  <div className="sw-label" style={{ color: isArmed ? '#4ade80' : 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}>ARM</div>
                   <div className={`sw-body ${isArmed ? 'sw-body--on' : ''}`}>
                     <div className={`sw-lever ${isArmed ? 'sw-lever--on' : ''}`} />
                   </div>
-                </div>
-                <div className="tx-sw">
-                  <div className="sw-label">RTH</div>
-                  <div className="sw-body"><div className="sw-lever" /></div>
                 </div>
               </div>
             </div>
