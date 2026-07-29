@@ -308,8 +308,8 @@ const Simulator = () => {
         const propY = 0.14;
 
         const motorLocs = [
-          { x:  armX, z:  armZ, color: 0xef4444 }, // Front-Left (Red prop)
-          { x: -armX, z:  armZ, color: 0xef4444 }, // Front-Right (Red prop)
+          { x:  armX, z:  armZ, color: 0x3b82f6 }, // Front-Left (Blue prop)
+          { x: -armX, z:  armZ, color: 0x3b82f6 }, // Front-Right (Blue prop)
           { x: -armX, z: -armZ, color: 0x3b82f6 }, // Rear-Right (Blue prop)
           { x:  armX, z: -armZ, color: 0x3b82f6 }, // Rear-Left (Blue prop)
         ];
